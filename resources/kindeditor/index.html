@@ -1,0 +1,126 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Custom Theme Examples</title>
+<link href="./css/bootstrap.css" rel="stylesheet">
+<link href="./css/todc-bootstrap.css" rel="stylesheet">
+<style type="text/css">
+
+.ke-icon-save {
+        background-image: url(themes/default/default.png);
+        background-position: 0px -1248px;
+        width: 16px;
+        height: 16px;
+}
+
+.jn-toolbar{
+	width: 100%;
+	border-bottom: 1px solid #ccc;
+}
+.jn-btns{
+	padding-top: 9px;
+	padding-right: 9px;
+}
+.jn-title{
+}
+</style>
+</head>
+<body>
+	<input type="hidden" name="editorType" id="editorType" value="" />
+	<input type="hidden" name="uuid" id="uuid" value="" />
+	<input type="hidden" name="categoryId" id="categoryId" value="" />
+
+	<textarea id="content" name="content"
+		style="width: 700px; height: 200px; visibility: hidden;"></textarea>
+	<script charset="utf-8" src="jquery.1.6.4.min.js"></script>
+	<script charset="utf-8" src="kindeditor-min.js"></script>
+	<script charset="utf-8" src="lang/zh_CN.js"></script>
+	<script>
+	var editor;
+	var varK;
+	var cmdPaste;
+	KindEditor.lang({
+		save : '保存(Ctrl+S)'
+	});
+	KindEditor.ready(function(K) {
+		varK = K;
+		editor = K.create('#content', {
+			themeType : 'simple',
+			fullscreenMode:true,
+			items:[
+			        'save', 'source', '|', 'undo', 'redo', '|', 'template', 'code', 'cut', 'copy', 'paste',
+			        '|', 'justifyleft', 'justifycenter', 'justifyright',
+			        'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+			        'superscript', 'clearhtml', 'quickformat', 'selectall', '/',
+			        'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+			        'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
+			        'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+			        'anchor', 'link', 'unlink'
+			],
+			afterCreate : function() {
+				var self = this;
+				K.ctrl(self.edit.doc, 'V', function() {
+					cmdPaste = K.cmd(self.edit.doc);
+					sendNSCommand("paste");
+				
+				});
+				
+				K.ctrl(self.edit.doc, 'S', function() {
+					save();
+				});
+			}
+		});
+
+		var toolbar = '<div class="jn-toolbar"><div class="jn-title pull-left"><input type="text" id="title" class="" style="border: none;outline: none;width:40%;"></div><div class="jn-btns pull-right"> <a href="#" id="jn-save-btn"><i class="icon-pencil"></i>保存并阅读</a> <a href="#"><i class="icon-tags"></i>标签</a> <a href="#"><i class="icon-file"></i>附件</a></div></div>';
+		$(".ke-container").prepend(toolbar);
+	});
+
+	function init_content(uuid,title,content,categoryId,editorType){
+		$("#uuid").val(uuid);
+		$("#title").val(title);
+		$("#categoryId").val(categoryId);
+		content = varK.unescape(content);
+		editor.html(content);
+	}
+
+	function save () {
+		var command = "save";
+		var content = editor.html();
+		var title = $("#title").val();
+		var uuid = $("#uuid").val();
+		var categoryId = $("#categoryId").val();
+		var editorType= $("#editorType").val();
+		sendNSCommand(command, uuid, content, categoryId, "0",title);
+	}	
+	function savAndRead () {
+		var command = "savAndRead";
+		var content = editor.html();
+		var uuid = $("#uuid").val();
+		var title = $("#title").val();
+		var categoryId = $("#categoryId").val();
+		var editorType= $("#editorType").val();
+		sendNSCommand(command, uuid, content, categoryId, "0",title);
+	}	
+
+	function paste (type,html) {
+		if(type==1){//文字类型
+			cmdPaste.paste();
+		}
+		 if(type==2){//图片类型
+			html = varK.unescape(html);
+			editor.insertHtml(html);
+		}
+	}
+	
+
+	$(document).ready(function(){
+		$("#jn-save-btn").click(function(){
+			savAndRead();
+		});
+	});
+	
+	</script>
+</body>
+</html>

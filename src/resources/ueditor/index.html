@@ -1,0 +1,95 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Custom Theme Examples</title>
+<style type="text/css">
+.ke-icon-save {
+        background-image: url(themes/default/default.png);
+        background-position: 0px -1248px;
+        width: 16px;
+        height: 16px;
+}
+</style>
+</head>
+<body>
+	<input type="hidden" name="editorType" id="editorType" value="" />
+	<input type="hidden" name="uuid" id="uuid" value="" />
+	<input type="hidden" name="categoryId" id="categoryId" value="" />
+
+	<textarea id="content" name="content"
+		style="width: 700px; height: 200px; visibility: hidden;"></textarea>
+	<script charset="utf-8" src="jquery.1.6.4.min.js"></script>
+	<script charset="utf-8" src="kindeditor-min.js"></script>
+	<script charset="utf-8" src="lang/zh_CN.js"></script>
+	<script>
+	var editor;
+	var varK;
+	var cmdPaste;
+	KindEditor.lang({
+		save : '保存(Ctrl+S)'
+	});
+	KindEditor.ready(function(K) {
+		varK = K;
+		editor = K.create('#content', {
+			themeType : 'simple',
+			fullscreenMode:true,
+			items:[
+			        'save', 'source', '|', 'undo', 'redo', '|', 'template', 'code', 'cut', 'copy', 'paste',
+			        '|', 'justifyleft', 'justifycenter', 'justifyright',
+			        'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+			        'superscript', 'clearhtml', 'quickformat', 'selectall', '/',
+			        'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+			        'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image',
+			        'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
+			        'anchor', 'link', 'unlink'
+			],
+			afterCreate : function() {
+				var self = this;
+				K.ctrl(self.edit.doc, 'V', function() {
+					cmdPaste = K.cmd(self.edit.doc);
+					sendNSCommand("paste");
+				
+				});
+				
+				K.ctrl(self.edit.doc, 'S', function() {
+					save();
+				});
+			}
+		});
+
+
+	});
+
+	function init_content(uuid,title,content,categoryId,editorType){
+		$("#uuid").val(uuid);
+		$("#categoryId").val(categoryId);
+		$("#editorType").val(editorType);
+		content = varK.unescape(content);
+		editor.html(content);
+	}
+
+	function save () {
+		var command = "save";
+		var content = editor.html();
+		var uuid = $("#uuid").val();
+		var categoryId = $("#categoryId").val();
+		var editorType= $("#editorType").val();
+		sendNSCommand(command, uuid, content, categoryId, editorType);
+	}	
+
+	function paste (type,html) {
+		if(type==1){//文字类型
+			cmdPaste.paste();
+		}
+		 if(type==2){//图片类型
+			html = varK.unescape(html);
+			editor.insertHtml(html);
+		}
+	}
+	
+	
+	</script>
+</body>
+</html>

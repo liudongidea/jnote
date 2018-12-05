@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta charset="utf-8">
+
+<title>editor</title>
+<link rel="stylesheet" type="text/css" href="lib/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="lib/css/bootstrap-wysihtml5.css" />
+
+<style type="text/css" media="screen">
+	.btn.jumbo {
+		font-size: 20px;
+		font-weight: normal;
+		padding: 14px 24px;
+		margin-right: 10px;
+		-webkit-border-radius: 6px;
+		-moz-border-radius: 6px;
+		border-radius: 6px;
+	}
+</style>
+
+</head>
+<body style="overflow-y:hidden" >
+	<div class="container-flow">
+		<input type="hidden" name="editorType" id="editorType" value="" />
+		<input type="hidden" name="uuid" id="uuid" value="" />
+		<input type="hidden" name="categoryId" id="categoryId" value="" />
+		<input class="input-xxlarge" type="text" name="title" id="title" style="width: 98.5%" value="" />
+		<textarea class="textarea" id="content" placeholder="Enter text ..." style="width: 98.5%; height: 550px"  onkeydown="KeyDown()"></textarea>
+	</div>
+
+
+	<script src="lib/js/wysihtml5-0.3.0.js"></script>
+	<script src="lib/js/jquery.js"></script>
+	<script src="lib/js/bootstrap.js"></script>
+	<script src="lib/js/bootstrap-wysihtml5.js"></script>
+	
+	<script>
+	
+		var options={
+			
+		}
+	
+		var wysihtml5Editor=$('#content').wysihtml5(options);
+		
+		function save_command() {
+			var command = "save";
+			var content = $("#content").val();
+			var uuid = $("#uuid").val();
+			var title = $("#title").val();
+			var categoryId = $("#categoryId").val();
+			var editorType = $("#editorType").val();
+			sendNSCommand(command, uuid, title, content, categoryId, editorType);
+		}
+		$('#save-btn').click(function() {
+			save_command();
+		});
+		$('#attachment-btn').click(function() {
+			sendNSCommand("attachment");
+		});
+		$('#paste-btn').click(function() {
+			//sendNSCommand("paste");
+			wysihtml5Editor.data("wysihtml5").editor.composer.selection.insertHTML("aaaaaaaaaaaaaa");
+		});
+		
+		function paste(pasteHtml){
+			//alert(pasteHtml);
+			$('#attachment-btn').attr('data-wysihtml5-command-value','aaa');
+		}
+		function init_content(uuid, title, content, categoryId, editorType) {
+			$("#uuid").val(uuid);
+			$("#title").val(title);
+			$("#categoryId").val(categoryId);
+			$("#editorType").val(editorType);
+			wysihtml5Editor.data("wysihtml5").editor.setValue(content, true);	
+		}
+		
+	</script>
+
+</body>
+</html>

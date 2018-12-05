@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>markdown editor</title>
+
+<!-- Le styles -->
+<link rel="stylesheet" type="text/css"
+	href="lib/bootstrap/css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="lib/prettify/prettify.css" />
+<link rel="stylesheet" type="text/css" href="css/demo.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+		<script src="lib/html5.js"></script>
+	<![endif]-->
+</head>
+<body>
+	<input type="hidden" name="editorType" id="editorType" value="" />
+	<input type="hidden" name="uuid" id="uuid" value="" />
+	<input type="hidden" name="categoryId" id="categoryId" value="" />
+	<input class="input-xxlarge" type="text" name="title" id="title"
+		placeholder=".input-xxlarge" style="width: 98.5%" value="" />
+	<div class="wmd-panel">
+		<div id="wmd-button-bar"></div>
+		<textarea id="wmd-input" class="wmd-input"></textarea>
+	</div>
+
+	<div id="wmd-preview" class="wmd-panel wmd-preview"></div>
+
+
+	<script type="text/javascript" src="./lib/bootstrap/js/jquery.js"></script>
+	<script type="text/javascript" src="./lib/bootstrap/js/bootstrap.js"></script>
+	<script type="text/javascript" src="./lib/prettify/prettify.js"></script>
+	<script type="text/javascript" src="./lib/jquery.insertAtCaret.js"></script>
+	<script type="text/javascript"
+		src="./lib/pagedown/Markdown.Converter.js"></script>
+	<script type="text/javascript"
+		src="./lib/pagedown/Markdown.Sanitizer.js"></script>
+	<script type="text/javascript" src="./lib/pagedown/Markdown.Editor.js"></script>
+	<script type="text/javascript" src="./lib/pagedown/Markdown.Extra.js"></script>
+	<script type="text/javascript"
+		src="./lib/pagedown/local/Markdown.local.zh.js"></script>
+
+
+	<script type="text/javascript">
+		function init_editor() {
+			var converter = new Markdown.Converter();
+			Markdown.Extra.init(converter, {
+				extensions : "all"
+			});
+			var help = function() {
+			}
+			var options = {
+				helpButton : {
+					handler : help
+				},
+				strings : Markdown.local.zh
+			};
+			var editor = new Markdown.Editor(converter, 0, options);
+			editor.hooks.chain("onPreviewRefresh", prettyPrint); // google code prettify
+			editor.run();
+		}
+
+		function copy_command() {
+			var command = "copy";
+			sendNSCommand(command);
+		}
+
+		function save_command() {
+			var command = "save";
+			var uuid = $("#uuid").val();
+			var title = $("#title").val();
+			var content = $("#wmd-input").val();
+			var categoryId = $("#categoryId").val();
+			var editorType = $("#editorType").val();
+			sendNSCommand(command, uuid, title, content, categoryId, editorType);
+		}
+
+		function save_click() {
+			$('#wmd-save-button').click(function() {
+				save_command();
+			});
+		}
+		function init_content(uuid, title, content, categoryId, editorType) {
+			$('#uuid').val(uuid);
+			$('#title').val(title);
+			$('#wmd-input').val(content);
+			$('#categoryId').val(categoryId);
+			$('#editorType').val(editorType);
+			init_editor();
+			save_click();
+		}
+
+		function hotkey() {
+			var a = window.event.keyCode;
+			if ((a == 83) && (event.ctrlKey)) {
+				save_command();
+				return false;
+			}
+			if ((a == 86) && (event.ctrlKey)) {
+				copy_command();
+				return false;
+			}
+		}
+		document.onkeydown = hotkey;
+		
+		function paste(value){
+			$("#wmd-input").insertAtCaret(value);
+		}
+
+	</script>
+
+
+
+</body>
+</html>
+
+
+
+
